@@ -1,0 +1,58 @@
+From 1234b035fe12f0801979ccd2c26be5bf859f5c0d Mon Sep 17 00:00:00 2001
+From: Alexander Kahl <alex@lshift.de>
+Date: Wed, 7 Sep 2016 11:03:58 +0200
+Subject: [PATCH 2/2] Integrate CI Reporter
+
+---
+ Gemfile  |  1 +
+ Rakefile | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/Gemfile b/Gemfile
+index 1c61a97..a902546 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -34,6 +34,7 @@ end
+ group :test do
+   gem "rspec", "~> 3.4.0"
+   gem "rabbitmq_http_api_client", "~> 1.6.0"
++  gem "ci_reporter_rspec"
+ end
+ 
+ gemspec
+diff --git a/Rakefile b/Rakefile
+index 043cbfb..febbc26 100644
+--- a/Rakefile
++++ b/Rakefile
+@@ -1,5 +1,6 @@
+ require 'rake'
+ require 'rspec/core/rake_task'
++require 'ci/reporter/rake/rspec'
+ 
+ RSpec::Core::RakeTask.new(:integration) do |t|
+   # excludes unit tests as those involve many iterations
+@@ -10,6 +11,15 @@ RSpec::Core::RakeTask.new(:integration) do |t|
+   t.rspec_opts = "--format progress"
+ end
+ 
++RSpec::Core::RakeTask.new(:rammler) do |t|
++  # excludes unit tests as those involve many iterations
++  # and sometimes suffer from obscure interference from integration tests (!)
++  t.pattern    = ["spec/higher_level_api/integration", "spec/lower_level_api/integration"].
++    map { |dir| Dir.glob(File.join(dir, "**", "*_spec.rb")) }.reduce(&:+) - ["spec/higher_level_api/integration/tls_connection_spec.rb"]
++
++  t.rspec_opts = "--format progress"
++end
++
+ RSpec::Core::RakeTask.new(:unit) do |t|
+   t.pattern    = Dir.glob("spec/unit/**/*_spec.rb")
+ 
+@@ -25,3 +35,5 @@ RSpec::Core::RakeTask.new(:recovery_integration) do |t|
+ end
+ 
+ task :default => :integration
++
++task :rammler => "ci:setup:rspec"
+-- 
+2.7.4
+
