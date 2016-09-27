@@ -1,0 +1,4 @@
+---
+ansible_connection: local
+ansible_become: false
+aws_region: eu-central-1
