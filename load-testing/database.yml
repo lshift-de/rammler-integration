@@ -1,0 +1,33 @@
+- name: Provision and setup RDS instance
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    instances: "{{ (lookup('file', 'inventory.json') | from_json).instances }}"
+
+  tasks:
+    - name: Provision a postgres db on RDS
+      rds:
+        command: create
+        region: '{{ aws_region }}'
+        db_engine: postgres
+        instance_name: lshift-de-rammler-load-db
+        db_name: rammler
+        username: rammler
+        password: rammelrammel
+        size: 5
+        instance_type: db.t2.micro
+        subnet: default-vpc-573f1f3e
+        vpc_security_groups: sg-88c301e0
+        wait: true
+        wait_timeout: 600
+      register: ec2
+
+    - name: Write inventory file
+      template: src=templates/inventory.json.j2 dest=./rds.json
+
+    - name: prepare rabbitmq table sql
+      template: src=templates/rabbit.sql.j2 dest=./rabbit.sql
+
+    - name: execute sql
+      command: psql postgresql://{{ ec2.instance.endpoint }}/rammler?user=rammler&password=rammelrammel -f rabbit.sql

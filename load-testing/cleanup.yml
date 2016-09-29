@@ -6,4 +6,14 @@
       ec2:
         state: 'absent'
         region: '{{ aws_region }}'
-        instance_ids: "{{ lookup('file', 'inventory.json') | from_json }}"
+        instance_ids: "{{ (lookup('file', 'inventory.json') | from_json).instance_ids }}"
+
+    - name: Delete RDS instance
+      rds:
+        command: delete
+        region: '{{ aws_region }}'
+        instance_name: "{{ (lookup('file', 'rds.json') | from_json).instance.id }}"
+
+    - name: Delete files
+      file: path={{ item }} state=absent
+      with_items: [ inventory.json, rds.json, rabbit.sql ]

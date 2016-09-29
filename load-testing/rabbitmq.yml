@@ -1,6 +1,8 @@
 - name: Provision and register rabbitmq instances
   hosts: localhost
   gather_facts: false
+  vars:
+    amount: 5
 
   tasks:
     - name: Provision a set of rabbitmq instances on ec2
@@ -12,7 +14,7 @@
          region: '{{ aws_region }}'
          key_name: lshift-de-vpc
          wait: true
-         exact_count: 5
+         exact_count: '{{ amount }}'
          count_tag:
             Name: rabbitmq-load
          instance_tags:
@@ -21,7 +23,7 @@
       register: ec2
 
     - name: Add new instances to host group
-      add_host: hostname={{ item.private_ip }} groupname=aws,rabbitmq ami_launch_index={{ item.ami_launch_index }}
+      add_host: hostname={{ item.private_ip }} groupname=aws,rabbitmq instance={{ item }}
       with_items: '{{ec2.instances}}'
 
     - name: Wait for SSH to come up
@@ -43,5 +45,19 @@
       service: name=rabbitmq-server state=started
 
     - name: add rabbitmq user
-      rabbitmq_user: user=user-{{ ami_launch_index }}
+      rabbitmq_user: user={{ instance.id }}
                      password=rammler
+                     vhost=/
+                     configure_priv=.*
+                     read_priv=.*
+                     write_priv=.*
+                     state=present
+
+    - name: create swap file
+      command: dd if=/dev/zero of=/swapfile count=2048 bs=1MiB
+
+    - name: ready swap file
+      command: mkswap /swapfile
+
+    - name: activate swap file
+      command: swapon /swapfile
