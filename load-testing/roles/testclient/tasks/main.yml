@@ -1,0 +1,12 @@
+---
+- name: install ruby
+  yum: name=ruby state=latest
+
+- name: install rubygems
+  yum: name=rubygems state=latest
+
+- name: install dependencies
+  gem: name=bunny state=present
+
+- name: copy test script to machines
+  copy: src=files/client.rb dest=/

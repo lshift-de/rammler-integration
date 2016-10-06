@@ -1,9 +1,8 @@
 - name: Provision and setup RDS instance
   hosts: localhost
   gather_facts: false
-
   vars:
-    instances: "{{ (lookup('file', 'inventory.json') | from_json).instances }}"
+    aws_region: eu-central-1
 
   tasks:
     - name: Provision a postgres db on RDS
@@ -22,9 +21,6 @@
         wait: true
         wait_timeout: 600
       register: ec2
-
-    - name: Write inventory file
-      template: src=templates/inventory.json.j2 dest=./rds.json
 
     - name: prepare rabbitmq table sql
       template: src=templates/rabbit.sql.j2 dest=./rabbit.sql

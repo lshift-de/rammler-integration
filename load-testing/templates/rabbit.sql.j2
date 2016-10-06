@@ -1,4 +1,4 @@
 CREATE TABLE host ( host varchar(255), port integer, ssl boolean, username varchar(50) );
-{% for instance in instances  %}
-INSERT INTO host VALUES ('{{ instance.private_ip }}', 5672, FALSE, '{{ instance.id }}');
+{% for instance in groups['tag_class_load_rabbitmq'] %}
+INSERT INTO host VALUES ('{{ instance }}', 5672, FALSE, '{{ instance }}');
 {% endfor %}

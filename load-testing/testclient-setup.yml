@@ -1,0 +1,13 @@
+---
+- name: Configure client instances
+  hosts: tag_class_load_testclient
+  vars:
+    endpoint: groups['load-rammler']
+
+  roles:
+    - role: testclient
+      endpoint: "{{ endpoint }}"
+
+  tasks:
+    - name: start test script
+      shell: ruby /client.rb {{ endpoint }} {{ id }} rammler 10000000 &

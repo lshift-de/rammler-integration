@@ -1,0 +1,15 @@
+---
+ - name: install lshift repo
+   yum: name=https://s3-eu-central-1.amazonaws.com/lshift-de-rpms/alldist/noarch/lshift.de-release-0-1.noarch.rpm state=present
+
+ - name: install rammler
+   yum: name=rammler state=latest disable_gpg_check=true
+
+ - name: install nss-myhostname
+   yum: name=nss-myhostname state=latest
+
+ - name: configure rammler
+   template: src=templates/rammler.edn.j2 dest=/etc/rammler.edn
+
+ - name: start rammler
+   service: name=rammler state=started

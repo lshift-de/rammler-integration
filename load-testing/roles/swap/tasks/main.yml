@@ -1,0 +1,38 @@
+---
+- name: "test for swap partition"
+  shell: 'swapon -s | grep -E "^/"'
+  register: swapfile
+  ignore_errors: yes
+
+- name: "write swapfile"
+  when: swapfile|failed
+  command: dd if=/dev/zero of={{ swap_location }} bs=1MiB count=2048 creates={{ swap_location }}
+  register: write_swapfile
+
+- name: "set swapfile permissions"
+  when: swapfile|failed and write_swapfile.changed
+  file: path={{ swap_location }}
+        owner=root
+        group=root
+        mode=0600
+
+- name: "prepare swapfile"
+  when: swapfile|failed and write_swapfile.changed
+  command: "mkswap {{ swap_location }}"
+
+- name: "enable swap"
+  when: swapfile|failed
+  command: "swapon {{ swap_location }}"
+
+- name: "add swapfile mount point"
+  when: swapfile|failed
+  lineinfile: dest=/etc/fstab
+              regexp="^{{ swap_location }}"
+              state=present
+              line="{{ swap_location }}       none    swap    sw      0       0"
+
+- name: "set swappiness"
+  when: swapfile|failed
+  sysctl: name=vm.swappiness
+          value={{ swap_swappiness }}
+          state=present

@@ -1,19 +1,17 @@
+---
 - name: Terminate instances
+  hosts: tag_class_load_rammler:tag_class_load_rabbitmq:tag_class_load_testclient
+  gather_facts: false
+
+  tasks:
+    - name: Remove instance
+      local_action: ec2 state=absent instance_ids={{ ec2_id }}
+
+- name: Terminate RDS instance
   hosts: localhost
 
   tasks:
-    - name: Terminate instances that were previously launched
-      ec2:
-        state: 'absent'
-        region: '{{ aws_region }}'
-        instance_ids: "{{ (lookup('file', 'inventory.json') | from_json).instance_ids }}"
-
-    - name: Delete RDS instance
-      rds:
+    - rds:
         command: delete
-        region: '{{ aws_region }}'
-        instance_name: "{{ (lookup('file', 'rds.json') | from_json).instance.id }}"
-
-    - name: Delete files
-      file: path={{ item }} state=absent
-      with_items: [ inventory.json, rds.json, rabbit.sql ]
+        region: eu-central-1
+        instance_name: lshift-de-rammler-load-db

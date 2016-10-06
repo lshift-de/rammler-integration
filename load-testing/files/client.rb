@@ -11,7 +11,7 @@ q.subscribe do |delivery_info, metadata, payload|
   puts "Received #{payload}"
 end
 
-for i in 0..ARGV[3]
+for i in 0..ARGV[3].to_i
   x.publish("Hello #{i}!", :routing_key => q.name)
 end
 

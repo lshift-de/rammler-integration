@@ -1,0 +1,16 @@
+- name: Get database facts
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - rds:
+        command: facts
+        instance_name: lshift-de-rammler-load-db
+      register: rds
+
+- name: Configure rammler instance
+  hosts: tag_class_load_rammler
+
+  roles:
+    - role: rammler
+      endpoint: '{{ hostvars.localhost.rds.instance.endpoint }}'

@@ -1,0 +1,27 @@
+- name: Provision and register rammler instance
+  hosts: localhost
+  gather_facts: false
+  vars:
+    aws_region: eu-central-1
+
+  tasks:
+    - name: Provision a rammler instance on ec2
+      ec2:
+         group: lshift-de-vpc-internal
+         instance_type: c4.large
+         image: ami-96d2cefa
+         region: '{{ aws_region }}'
+         key_name: lshift-de-vpc
+         wait: true
+         instance_tags:
+            VPC: lshift-de-vpc
+            class: load-rammler
+         vpc_subnet_id: subnet-afe2e2c6
+      register: ec2
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.private_ip }} port=22 delay=60 timeout=300 state=started
+      with_items: '{{ec2.instances}}'
+
+    - name: Refresh inventory
+      meta: refresh_inventory

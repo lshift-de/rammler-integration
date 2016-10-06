@@ -1,0 +1,9 @@
+- name: Configure rabbitmq instances
+  hosts: tag_class_load_rabbitmq
+  gather_facts: false
+
+  roles:
+    - role: rabbitmq
+      user: '{{ ec2_id }}'
+      password: rammler
+    - role: swap

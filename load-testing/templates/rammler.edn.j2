@@ -1,22 +1,21 @@
-{:log-level :info
- :log-directory "/var/log/rammler"
- :port 5672
- :ssl-port 5671
- :interface "0.0.0.0"
- :ssl-interface "0.0.0.0"
- :strategy :database
- :database {:spec {:subprotocol "postgresql"
-                   :subname "//{{ endpoint }}:5432/rammler"
-                   :user "rammler"
-                   :password "rammelrammel"}
-            :query "select * from host where username = '$user'"}
- :capabilities [:publisher-confirms
-                :per-consumer-qos
-                :exchange-exchange-bindings
-                :authentication-failure-close
-                :connection.blocked
-                :consumer-cancel-notify
-                :basic.nack
-                :direct-reply-to
-                :consumer-priorities]}
-
+#:conf{:log-level :info
+       :log-directory "/var/log/rammler"
+       :port 5672
+       :ssl-port 5671
+       :interface "0.0.0.0"
+       :ssl-interface "0.0.0.0"
+       :strategy :database
+       :database #:database{:spec {:subprotocol "postgresql"
+                                   :subname "//{{ endpoint }}:5432/rammler"
+                                   :user "rammler"
+                                   :password "rammelrammel"}
+                            :query "select * from host where username = '$user'"}
+       :capabilities [:publisher-confirms
+                      :per-consumer-qos
+                      :exchange-exchange-bindings
+                      :authentication-failure-close
+                      :connection.blocked
+                      :consumer-cancel-notify
+                      :basic.nack
+                      :direct-reply-to
+                      :consumer-priorities]}
