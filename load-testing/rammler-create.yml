@@ -3,14 +3,17 @@
   gather_facts: false
   vars:
     aws_region: eu-central-1
+    spot_price: 0.75
+    instance_type: m4.16xlarge
 
   tasks:
     - name: Provision a rammler instance on ec2
       ec2:
          group: lshift-de-vpc-internal
-         instance_type: c4.large
+         instance_type: '{{ instance_type  }}'
          image: ami-96d2cefa
          region: '{{ aws_region }}'
+         spot_price: '{{ spot_price }}'
          key_name: lshift-de-vpc
          wait: true
          instance_tags:

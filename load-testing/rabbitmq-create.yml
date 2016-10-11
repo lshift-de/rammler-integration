@@ -4,12 +4,16 @@
   vars:
     amount: 5
     aws_region: eu-central-1
+    spot_price: 0.05
+    instance_type: c3.large
 
   tasks:
     - name: Provision a set of rabbitmq instances on ec2
       ec2:
          group: lshift-de-vpc-internal
-         instance_type: t2.nano
+         instance_type: '{{ instance_type }}'
+         spot_wait_timeout: 600
+         spot_price: '{{ spot_price }}'
          image: ami-96d2cefa
          region: '{{ aws_region }}'
          key_name: lshift-de-vpc

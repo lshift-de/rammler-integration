@@ -2,19 +2,22 @@
   hosts: localhost
   gather_facts: false
   vars:
-    ids: groups['tag_class_load_rabbitmq']
+    ids: "{{ groups['tag_class_load_rabbitmq'] }}"
     aws_region: eu-central-1
+    spot_price: 0.1
+    instance_type: m3.medium
 
   tasks:
     - name: Provision a set of test client instances on ec2
       ec2:
          group: lshift-de-vpc-internal
-         instance_type: t2.nano
+         instance_type: '{{ instance_type }}'
          image: ami-96d2cefa
          region: '{{ aws_region }}'
+         spot_price: '{{ spot_price }}'
          key_name: lshift-de-vpc
          wait: true
-         exact_count: '{{ ids|length }}'
+         exact_count: '{{ ids | length }}'
          count_tag:
             Name: load-testclient
          instance_tags:

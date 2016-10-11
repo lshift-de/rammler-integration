@@ -7,12 +7,16 @@ ch = conn.create_channel
 q  = ch.queue("bunny")
 x  = ch.default_exchange
 
+f = File.open('testclient.log', 'w')
+
 q.subscribe do |delivery_info, metadata, payload|
-  puts "Received #{payload}"
+  f.write "#{payload}"
+  if payload == ARGV[3]
+    f.close
+    conn.close
+  end
 end
 
 for i in 0..ARGV[3].to_i
-  x.publish("Hello #{i}!", :routing_key => q.name)
+  x.publish("#{i}", :routing_key => q.name)
 end
-
-conn.close

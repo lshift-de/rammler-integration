@@ -2,12 +2,12 @@
 - name: Configure client instances
   hosts: tag_class_load_testclient
   vars:
-    endpoint: groups['load-rammler']
+    endpoint: "{{ groups['tag_class_load_rammler'][0] }}"
+    index: "{{ play_hosts.index(inventory_hostname) }}"
 
   roles:
-    - role: testclient
-      endpoint: "{{ endpoint }}"
+  - role: testclient
 
   tasks:
     - name: start test script
-      shell: ruby /client.rb {{ endpoint }} {{ id }} rammler 10000000 &
+      command: ruby /client.rb {{ endpoint }} {{ groups['tag_class_load_rabbitmq'][index|int] }} rammler 10000000

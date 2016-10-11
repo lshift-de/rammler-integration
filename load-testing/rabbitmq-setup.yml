@@ -4,6 +4,6 @@
 
   roles:
     - role: rabbitmq
-      user: '{{ ec2_id }}'
+      user: '{{ ec2_private_ip_address }}'
       password: rammler
     - role: swap

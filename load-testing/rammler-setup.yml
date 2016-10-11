@@ -6,6 +6,7 @@
     - rds:
         command: facts
         instance_name: lshift-de-rammler-load-db
+        region: eu-central-1
       register: rds
 
 - name: Configure rammler instance

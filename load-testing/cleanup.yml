@@ -5,7 +5,7 @@
 
   tasks:
     - name: Remove instance
-      local_action: ec2 state=absent instance_ids={{ ec2_id }}
+      local_action: ec2 state=absent region=eu-central-1 instance_ids={{ ec2_id }}
 
 - name: Terminate RDS instance
   hosts: localhost
