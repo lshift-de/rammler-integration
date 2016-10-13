@@ -1,0 +1,11 @@
+[Unit]
+Description=Riemann net event sending
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ruby /usr/local/bin/riemann-net --host $RIEMANN_HOST
+Restart=on-failure
+EnvironmentFile=/etc/sysconfig/riemann-tools
+
+[Install]
+WantedBy=multi-user.target

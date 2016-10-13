@@ -7,7 +7,11 @@
 
   roles:
   - role: testclient
+  - role: riemann-tools
 
   tasks:
     - name: start test script
       command: ruby /client.rb {{ endpoint }} {{ groups['tag_class_load_rabbitmq'][index|int] }} rammler 10000000
+
+    - name: Set hostname to something meaningful
+      hostname: name="load-testclient_{{ inventory_hostname|replace('.','-') }}"

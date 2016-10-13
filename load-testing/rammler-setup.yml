@@ -15,3 +15,8 @@
   roles:
     - role: rammler
       endpoint: '{{ hostvars.localhost.rds.instance.endpoint }}'
+    - role: riemann-tools
+
+  tasks:
+    - name: Set hostname to something meaningful
+      hostname: name="load-rammler_{{ inventory_hostname|replace('.','-') }}"

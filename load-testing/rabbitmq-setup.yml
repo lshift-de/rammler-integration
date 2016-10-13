@@ -7,3 +7,8 @@
       user: '{{ ec2_private_ip_address }}'
       password: rammler
     - role: swap
+    - role: riemann-tools
+
+  tasks:
+    - name: Set hostname to something meaningful
+      hostname: name="load-rabbitmq_{{ inventory_hostname|replace('.','-') }}"

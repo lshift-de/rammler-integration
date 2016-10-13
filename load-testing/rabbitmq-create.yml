@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    amount: 5
+    amount: 1
     aws_region: eu-central-1
     spot_price: 0.05
     instance_type: c3.large

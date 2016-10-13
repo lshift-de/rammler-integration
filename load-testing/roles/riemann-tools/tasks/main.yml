@@ -1,0 +1,30 @@
+---
+- name: install ruby
+  yum: name=ruby state=latest
+
+- name: install rubygems
+  yum: name=rubygems state=latest
+
+- name: install riemann tools
+  gem: name=riemann-tools state=present user_install=no
+
+- name: install riemann client
+  gem: name=riemann-client state=present user_install=no
+
+- name: ensure systemd service directory
+  file: path=/etc/systemd/system state=directory
+
+- name: copy riemann client service files
+  copy: src={{ item }} dest=/etc/systemd/system/{{ item }}
+  with_items:
+    - riemann-health.service
+    - riemann-net.service
+
+- name: copy riemann client sysconfig file
+  copy: src=sysconfig dest=/etc/sysconfig/riemann-tools
+
+- name: start riemann health service
+  systemd: daemon_reload=yes enabled=true state=started name=riemann-health.service
+
+- name: start riemann net service
+  systemd: daemon_reload=yes enabled=true state=started name=riemann-net.service
